@@ -67,4 +67,29 @@ if(command === "add-task"){
         fs.writeFileSync(filePath, JSON.stringify(tasks,null,2));
         console.log("task completed sucessfully");
     }
+}else if(command === "update-task"){
+    const identifier = process.argv[3];
+    const newTitle = process.argv[4];
+    const newDueDate = process.argv[5];
+
+    if(!identifier || !newTitle || !newDueDate){
+        console.log("Error: please provide title/id, new title and new due date to update the task");
+        process.exit(1);
+    }
+    
+    let updated = true;
+    tasks = tasks.map((task)=>{
+        if(identifier === task.title || identifier === task.id.toString()){
+            updated = true;
+            return {...task, title: newTitle, dueDate: newDueDate};
+        }
+        return task;
+    })
+
+    if(!updated){
+        console.log("task not found");
+    }else{
+        fs.writeFileSync(filePath, JSON.stringify(tasks,null,2));
+        console.log("task updated successfully");
+    }
 }
