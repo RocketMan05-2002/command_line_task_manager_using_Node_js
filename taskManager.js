@@ -92,4 +92,55 @@ if(command === "add-task"){
         fs.writeFileSync(filePath, JSON.stringify(tasks,null,2));
         console.log("task updated successfully");
     }
+}else if(command === "delete-task"){
+    const identifier = process.argv[3];
+    const initialLength = tasks.length;
+
+    if(!identifier){
+        console.log("Error: please provide title/id to delete task");
+        process.exit(1);
+    }
+
+    tasks = tasks.filter((task)=> task.title !== identifier && task.id.toString() !== identifier);
+
+    if(tasks.length === initialLength){
+        console.log("task not found");
+    }else{
+        fs.writeFileSync(filePath, JSON.stringify(tasks,null,2));
+        console.log("task deleted successfully");
+    }
+}else if( command === "search-tasks" ){
+    const term = process.argv[3];
+
+    if(!term){
+        console.log("Error: please provide term to search task");
+        process.exit(1);
+    }
+
+    const results = tasks.filter((task)=>
+        task.title.includes(term) || task.dueDate.includes(term)
+    );
+
+    if(results.length === 0){
+        console.log("no tasks found");
+    }else{
+        results.forEach((task,index)=>{
+            console.log(
+                `${index+1}.Title: ${task.title} | Due: ${task.dueDate} | Status: ${task.status}`
+            );
+        });
+    }
+}else if(command === "help"){
+    console.log(`
+        Available Commands: 
+        add-task <title> <dueDate> - add a new task
+        list-task - list all tasks
+        complete-task <title/id> - mark task as completed
+        update-task <title/id> <newTitle> <newDueDate> - update a task
+        delete-task <title/id> - delete a task
+        search-tasks <term> - search by title/due date
+        help - show help menu
+    `);
+}else{
+    console.log(`Invalid command, run "node taskManager.js help for the list of commands"`);
 }
